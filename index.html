@@ -82,20 +82,12 @@
         <div id="loginSection" class="card">
             <h2>Portal CBT</h2>
             <p class="subtitle">Masuk dengan akun sekolah</p>
-            <div class="form-group"><label>Nomor Induk Siswa (NIS)</label><input type="text" id="username" placeholder="Masukkan NIS"></div>
+            <div class="form-group"><label>Nomor Induk Siswa (NIS)</label><input type="text" id="username" placeholder="Masukkan NIS" autocomplete="off"></div>
             <div class="form-group" style="margin-bottom: 30px;"><label>Password</label><input type="password" id="password" placeholder="Masukkan Password"></div>
-            <button onclick="doLogin()" id="btnLogin" class="btn-primary">Masuk</button>
+            <button onclick="doLogin()" id="btnLogin" class="btn-primary">Masuk Ujian</button>
         </div>
 
-        <!-- 2. TOKEN -->
-        <div id="tokenSection" class="card hidden">
-            <h2 id="displayNama" style="color: var(--primary); font-size: 20px;"></h2>
-            <p class="subtitle" style="margin-bottom: 20px;">Silakan masukkan token ujian.</p>
-            <div class="form-group"><input type="text" id="token" placeholder="KETIK TOKEN" style="text-align: center; font-size: 22px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;"></div>
-            <button onclick="doVerifyToken()" id="btnToken" class="btn-primary">Validasi Token</button>
-        </div>
-
-        <!-- 3. KONFIRMASI -->
+        <!-- 2. KONFIRMASI -->
         <div id="confirmSection" class="card hidden">
             <h2>Konfirmasi Data</h2>
             <table class="data-table">
@@ -108,11 +100,11 @@
             <button onclick="startExam()" class="btn-primary">Mulai Ujian Sekarang</button>
         </div>
 
-        <!-- 5. SELESAI -->
+        <!-- 3. SELESAI -->
         <div id="finishSection" class="card hidden" style="text-align: center;">
             <svg style="width: 80px; height: 80px; color: var(--success); margin: 0 auto 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <h2>Ujian Selesai!</h2>
-            <p class="subtitle" style="margin-top: 10px;">Jawaban berhasil diunggah ke server.</p>
+            <p class="subtitle" style="margin-top: 10px;">Jawaban berhasil diunggah ke server.<br>Silakan lapor kepada Pengawas.</p>
         </div>
     </div>
 
@@ -147,18 +139,11 @@
         // =========================================================
         
         let state = { user: null, questions: [], answers: {}, currentIndex: 0, currentScreen: 'loginSection' };
-        let studentDB = []; // Database siluman untuk login 0 detik
 
         function saveLocalData() { localStorage.setItem('cbt_data', JSON.stringify(state)); }
 
-        // DOWNLOAD SILUMAN SAAT WEB DIBUKA (Tanpa Mengganggu Layar Login)
+        // CEK SESI (AUTO-SAVE) SAAT WEB DIBUKA
         window.onload = function() {
-            // Langsung fetch data siswa di background
-            fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'getStudents' }), headers: { 'Content-Type': 'text/plain' } })
-            .then(res => res.json())
-            .then(data => { if(data.status === 'success') studentDB = data.users; });
-
-            // Cek jika siswa sedang ujian dan HP mati/refresh
             const savedData = localStorage.getItem('cbt_data');
             if(savedData) {
                 state = JSON.parse(savedData);
@@ -166,15 +151,19 @@
                     document.getElementById('topNama').innerText = state.user.nama;
                     show('examSection'); renderNavigasi(); loadSoal(state.currentIndex);
                 } else if (state.currentScreen === 'confirmSection' && state.user) {
-                    document.getElementById('confNama').innerText = state.user.nama;
-                    document.getElementById('confNis').innerText = state.user.nis;
-                    document.getElementById('confRuang').innerText = state.user.ruang; // Menampilkan Ruang
-                    document.getElementById('confMapelDetail').innerText = state.user.mapel.toUpperCase();
-                    document.getElementById('confTotalSoal').innerText = state.questions.length + " Butir";
+                    setupConfirmSection();
                     show('confirmSection');
                 } else { show('loginSection'); }
             } else { show('loginSection'); }
         };
+
+        function setupConfirmSection() {
+            document.getElementById('confNama').innerText = state.user.nama;
+            document.getElementById('confNis').innerText = state.user.nis;
+            document.getElementById('confRuang').innerText = state.user.ruang;
+            document.getElementById('confMapelDetail').innerText = state.user.mapel.toUpperCase();
+            document.getElementById('confTotalSoal').innerText = state.questions.length + " Butir";
+        }
 
         function notify(msg, type = 'error') {
             const container = document.getElementById('toastContainer');
@@ -204,48 +193,28 @@
             for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; }
         }
 
-        // FUNGSI LOGIN INSTAN (0 DETIK!)
-        function doLogin() {
+        // LOGIN SEKALIGUS MENGAMBIL SOAL
+        async function doLogin() {
             const u = document.getElementById('username').value; 
             const p = document.getElementById('password').value;
             if(!u || !p) return notify('NIS dan Password wajib diisi!');
             
-            // Jika anak ngetik terlalu cepat dan background download belum selesai (jarang terjadi)
-            if(studentDB.length === 0) {
-                notify('Sedang sinkronisasi awal. Silakan klik Masuk lagi dalam 2 detik.', 'success');
-                return;
-            }
-
-            // Langsung cek di memori HP, INSTAN!
-            const user = studentDB.find(x => x.nis === u && x.pass === p);
-            if(user) {
-                if(user.status === "SELESAI") return notify('❌ UJIAN SELESAI. Anda tidak bisa login lagi.');
-                state.user = user; 
-                document.getElementById('displayNama').innerText = "Halo, " + state.user.nama; 
-                show('tokenSection'); // Langsung pindah tanpa loading
-            } else { notify('NIS atau Password salah!'); }
-        }
-
-        // FUNGSI TOKEN (Mengambil Soal)
-        async function doVerifyToken() {
-            const t = document.getElementById('token').value;
-            if(!t) return notify('Masukkan token!');
-            
-            setButtonLoading('btnToken', true, 'Validasi Token');
+            setButtonLoading('btnLogin', true, 'Masuk Ujian');
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'verifyToken', username: document.getElementById('username').value, token: t }), headers: { 'Content-Type': 'text/plain' } });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
+                
                 if(data.status === 'success') {
-                    state.questions = data.questions; shuffleArray(state.questions); state.user.mapel = data.mapel; 
-                    document.getElementById('confNama').innerText = state.user.nama;
-                    document.getElementById('confNis').innerText = state.user.nis;
-                    document.getElementById('confRuang').innerText = state.user.ruang; // Ruang dimunculkan!
-                    document.getElementById('confMapelDetail').innerText = state.user.mapel.toUpperCase();
-                    document.getElementById('confTotalSoal').innerText = state.questions.length + " Butir";
-                    show('confirmSection');
+                    state.user = data.user; 
+                    state.questions = data.questions; 
+                    shuffleArray(state.questions); // ACAK SOAL
+                    
+                    setupConfirmSection();
+                    show('confirmSection'); // LANGSUNG KE KONFIRMASI
                 } else { notify(data.message); }
-            } catch (err) { notify('Gagal cek token.'); }
-            setButtonLoading('btnToken', false, 'Validasi Token');
+            } catch (err) { notify('Gagal terhubung ke server.'); }
+            
+            setButtonLoading('btnLogin', false, 'Masuk Ujian');
         }
 
         function startExam() { show('examSection'); renderNavigasi(); loadSoal(0); }
