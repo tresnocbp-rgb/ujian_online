@@ -3,150 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ujian CBT Premium</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>CBT Ujian Sekolah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --primary-grad: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); --bg-color: #f1f5f9; --text-dark: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --card-bg: rgba(255, 255, 255, 0.95); }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh; overflow-x: hidden; display: flex; align-items: center; justify-content: center; padding: 15px; }
-        .bg-wave { position: fixed; top: 0; left: 0; width: 100%; height: 35vh; background: var(--primary-grad); z-index: -1; border-bottom-left-radius: 50% 15%; border-bottom-right-radius: 50% 15%; }
+        /* === DESAIN PROFESIONAL STANDAR NASIONAL === */
+        :root { --primary: #0ea5e9; --primary-dark: #0284c7; --bg: #f8fafc; --text: #334155; --text-light: #64748b; --border: #e2e8f0; --card: #ffffff; --success: #10b981; --danger: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card { background: var(--card-bg); padding: 35px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 100%; max-width: 420px; }
-        h1, h2 { text-align: center; color: var(--text-dark); margin-bottom: 8px; font-weight: 700; }
-        p.subtitle { color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 25px; }
-
-        input { width: 100%; padding: 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 15px; margin-bottom: 15px; background: #f8fafc; transition: 0.3s; }
-        input:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
-        button { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: var(--primary-grad); color: white; }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-success { background: #10b981; color: white; }
-        .btn-danger { background: #ef4444; color: white; margin-top: 20px; }
-
-        /* PERUBAHAN LAYOUT: Navigasi di atas pada HP */
-        .exam-layout { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 1100px; margin-top: 10px; }
-        @media (min-width: 850px) { .exam-layout { flex-direction: row-reverse; align-items: flex-start; } } /* Di laptop Nav tetap di kanan */
         
-        .panel { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        /* Header Top Bar */
+        .topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+        .app-title { font-weight: 700; color: var(--primary-dark); font-size: 18px; display: flex; align-items: center; gap: 10px; }
+        .student-info-top { font-size: 14px; font-weight: 600; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; color: var(--text); }
+
+        /* Container & Cards */
+        .container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: var(--card); padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 450px; border: 1px solid var(--border); }
+        
+        h2 { text-align: center; color: var(--text); margin-bottom: 5px; font-size: 24px; font-weight: 700; }
+        p.subtitle { text-align: center; color: var(--text-light); margin-bottom: 30px; font-size: 14px; }
+
+        /* Forms & Buttons */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text); }
+        input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; outline: none; transition: 0.2s; background: #f8fafc; }
+        input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
+        
+        button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: white; border: 1.5px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-danger { background: var(--danger); color: white; }
+
+        /* Data Confirmation Table */
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .data-table td { padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+        .data-table td:first-child { color: var(--text-light); font-weight: 500; }
+        .data-table td:last-child { font-weight: 700; text-align: right; color: var(--text); }
+
+        /* === LAYOUT UJIAN === */
+        .exam-container { width: 100%; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; padding: 20px; }
+        @media (min-width: 900px) { .exam-container { flex-direction: row-reverse; align-items: flex-start; } }
+        
+        .panel { background: var(--card); padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid var(--border); }
         .panel-soal { flex: 1; }
         .panel-nav { width: 100%; }
-        @media (min-width: 850px) { .panel-nav { width: 340px; position: sticky; top: 20px; } }
+        @media (min-width: 900px) { .panel-nav { width: 320px; position: sticky; top: 90px; } }
 
-        .header-soal { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
-        .badge-soal { background: #e0e7ff; color: #4338ca; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 14px; }
-        .teks-soal { font-size: 17px; line-height: 1.6; margin-bottom: 25px; white-space: pre-wrap; font-weight: 500;}
-        
-        .opsi-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; margin-bottom: 10px; background: white; }
+        /* Soal */
+        .soal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .soal-nomor { background: #e0f2fe; color: var(--primary-dark); padding: 6px 16px; border-radius: 8px; font-weight: 700; font-size: 16px; }
+        .soal-teks { font-size: 17px; line-height: 1.6; margin-bottom: 30px; font-weight: 500; }
+
+        /* Opsi */
+        .opsi-list { display: flex; flex-direction: column; gap: 12px; }
+        .opsi-item { display: flex; align-items: flex-start; gap: 15px; padding: 16px; border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer; transition: 0.2s; }
+        .opsi-item:hover { border-color: var(--primary); background: #f0f9ff; }
         .opsi-item input { display: none; }
-        .radio-circle { width: 30px; height: 30px; min-width: 30px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--text-muted); }
-        .opsi-item.selected { border-color: var(--primary); background: #eff6ff; }
-        .opsi-item.selected .radio-circle { background: var(--primary); border-color: var(--primary); color: white; }
+        .opsi-abjad { width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--text-light); }
+        .opsi-teks { font-size: 15px; line-height: 1.5; padding-top: 3px; }
+        
+        /* Opsi Dipilih */
+        .opsi-item.selected { border-color: var(--primary); background: #f0f9ff; box-shadow: 0 2px 8px rgba(14,165,233,0.1); }
+        .opsi-item.selected .opsi-abjad { background: var(--primary); color: white; }
 
-        .nav-bawah { display: flex; justify-content: space-between; margin-top: 30px; gap: 10px; }
-        .btn-prev { background: white; color: var(--text-dark); border: 2px solid var(--border); width: 48%; }
-        .btn-next-action { width: 48%; }
+        /* Navigasi Bawah */
+        .nav-bottom { display: flex; gap: 15px; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
+        
+        /* Grid Nomor Kanan/Atas */
+        .grid-title { font-weight: 700; text-align: center; margin-bottom: 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); }
+        .grid-wrapper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 25px; }
+        .btn-grid { aspect-ratio: 1; border: 1px solid var(--border); background: white; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; color: var(--text); }
+        .btn-grid.dijawab { background: var(--success); color: white; border-color: var(--success); }
+        .btn-grid.aktif { border: 2px solid var(--primary); transform: scale(1.1); box-shadow: 0 4px 10px rgba(14,165,233,0.2); }
 
-        .grid-title { font-weight: 700; text-align: center; margin-bottom: 15px; font-size: 15px; }
-        .grid-soal { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .btn-nomor { aspect-ratio: 1; border-radius: 8px; border: 2px solid #fef08a; background: #fef9c3; color: #a16207; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;}
-        .btn-nomor.dijawab { background: #10b981; border-color: #059669; color: white; }
-        .btn-nomor.aktif { border-color: var(--primary); transform: scale(1.1); z-index: 10; box-shadow: 0 0 0 3px rgba(37,99,235,0.2);}
-
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .loader-card { background: white; padding: 30px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        /* Loading */
+        .overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="bg-wave"></div>
+    <!-- TOP BAR (Khusus Menu Ujian) -->
+    <div class="topbar hidden" id="topbar">
+        <div class="app-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+            CBT Online
+        </div>
+        <div class="student-info-top" id="topNama"></div>
+    </div>
 
+    <!-- LOADING SCREEN -->
     <div id="loadingScreen" class="overlay hidden">
-        <div class="loader-card">
-            <div class="spinner"></div>
-            <div style="font-weight: 600;">Memproses Data...</div>
+        <div class="spinner"></div>
+        <div style="font-weight: 700; color: var(--text);">Memproses Data...</div>
+        <div style="font-size: 13px; color: var(--text-light); margin-top: 5px;">Mengambil data dari server</div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <!-- 1. LOGIN -->
+        <div id="loginSection" class="card">
+            <h2>Portal CBT</h2>
+            <p class="subtitle">Masuk dengan akun yang diberikan sekolah</p>
+            <div class="form-group">
+                <label>Nomor Induk Siswa (NIS)</label>
+                <input type="text" id="username" placeholder="Masukkan NIS" autocomplete="off">
+            </div>
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Masukkan Password">
+            </div>
+            <button onclick="doLogin()" class="btn-primary">Masuk</button>
         </div>
-    </div>
 
-    <!-- 1. LOGIN -->
-    <div id="loginSection" class="card fade-in">
-        <h1>Portal CBT</h1>
-        <p class="subtitle">Masuk menggunakan akun Anda</p>
-        <input type="text" id="username" placeholder="NIS / Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="doLogin()" class="btn-primary">Masuk Sekarang</button>
-    </div>
-
-    <!-- 2. TOKEN -->
-    <div id="tokenSection" class="card hidden fade-in">
-        <h2 id="displayNama" style="color: var(--primary); font-size: 20px; margin-bottom: 20px;"></h2>
-        <p class="subtitle">Minta Token kepada Pengawas Ruangan.</p>
-        <input type="text" id="token" placeholder="KETIK TOKEN" style="text-align: center; font-size: 24px; font-weight: 700; text-transform: uppercase;">
-        <button onclick="doVerifyToken()" class="btn-primary">Validasi Token</button>
-    </div>
-
-    <!-- 3. KONFIRMASI -->
-    <div id="confirmSection" class="card hidden fade-in">
-        <h2>Konfirmasi Data</h2>
-        <div style="background: #f8fafc; border-radius: 12px; padding: 15px; margin: 20px 0; border: 1px solid var(--border);">
-            <div class="info-row"><span style="color:var(--text-muted)">Nama</span><span id="confNama" style="font-weight:600"></span></div>
-            <div class="info-row"><span style="color:var(--text-muted)">NIS</span><span id="confNis" style="font-weight:600"></span></div>
-            <div class="info-row" style="border:none; padding:0; margin:0;"><span style="color:var(--text-muted)">Mapel</span><span id="confMapelDetail" style="font-weight:700; color:var(--primary)"></span></div>
+        <!-- 2. TOKEN -->
+        <div id="tokenSection" class="card hidden">
+            <h2 id="displayNama" style="color: var(--primary); font-size: 20px;"></h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Berhasil login. Silakan masukkan token.</p>
+            <div class="form-group">
+                <input type="text" id="token" placeholder="KETIK TOKEN" style="text-align: center; font-size: 22px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;">
+            </div>
+            <button onclick="doVerifyToken()" class="btn-primary">Validasi Token</button>
         </div>
-        <button onclick="startExam()" class="btn-primary">Mulai Kerjakan Ujian</button>
+
+        <!-- 3. KONFIRMASI -->
+        <div id="confirmSection" class="card hidden">
+            <h2>Konfirmasi Data</h2>
+            <p class="subtitle">Pastikan data berikut adalah milik Anda</p>
+            <table class="data-table">
+                <tr><td>Nama Peserta</td><td id="confNama"></td></tr>
+                <tr><td>NIS</td><td id="confNis"></td></tr>
+                <tr><td>Mata Pelajaran</td><td id="confMapelDetail" style="color: var(--primary);"></td></tr>
+                <tr><td>Jumlah Soal</td><td id="confTotalSoal"></td></tr>
+            </table>
+            <button onclick="startExam()" class="btn-primary">Mulai Ujian Sekarang</button>
+        </div>
+
+        <!-- 5. SELESAI -->
+        <div id="finishSection" class="card hidden" style="text-align: center;">
+            <svg style="width: 80px; height: 80px; color: var(--success); margin: 0 auto 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <h2>Ujian Selesai!</h2>
+            <p class="subtitle" style="margin-top: 10px; line-height: 1.6;">Jawaban Anda telah berhasil diunggah ke server. Status Anda kini telah terkunci.<br>Silakan lapor kepada Pengawas.</p>
+            <button onclick="window.location.reload()" class="btn-outline">Kembali ke Beranda</button>
+        </div>
     </div>
 
     <!-- 4. UJIAN -->
-    <div id="examSection" class="exam-layout hidden fade-in">
-        
-        <!-- NAVIGASI KINI DI ATAS (di HP) -->
+    <div id="examSection" class="exam-container hidden">
+        <!-- Panel Kanan/Atas: Navigasi -->
         <div class="panel panel-nav">
             <div class="grid-title">NAVIGASI SOAL</div>
-            <div class="grid-soal" id="gridNavigasi"></div>
+            <div class="grid-wrapper" id="gridNavigasi"></div>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; font-size: 13px; font-weight: 600; color: var(--text-light);">
+                <div style="display: flex; align-items: center; gap: 6px;"><div style="width:14px; height:14px; border:1px solid #cbd5e1; border-radius:3px;"></div> Belum</div>
+                <div style="display: flex; align-items: center; gap: 6px;"><div style="width:14px; height:14px; background:var(--success); border-radius:3px;"></div> Sudah</div>
+            </div>
+            
             <button onclick="submitExam()" class="btn-danger">SELESAIKAN UJIAN</button>
         </div>
 
-        <!-- SOAL -->
+        <!-- Panel Kiri/Bawah: Soal -->
         <div class="panel panel-soal">
-            <div class="header-soal">
-                <div class="badge-soal" id="nomorSoalTitle">SOAL 1</div>
-                <div style="font-size: 14px; font-weight: 600; color: var(--text-muted);" id="progressText"></div>
+            <div class="soal-header">
+                <div class="soal-nomor" id="nomorSoalTitle">Soal No. 1</div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--text-light);" id="progressText"></div>
             </div>
-            <div class="teks-soal" id="pertanyaanTeks"></div>
+            
+            <div class="soal-teks" id="pertanyaanTeks"></div>
             <div class="opsi-list" id="opsiContainer"></div>
             
-            <div class="nav-bawah">
-                <button onclick="prevSoal()" class="btn-prev">← Sebelumnya</button>
-                <button id="btnNextAction" onclick="nextSoal()" class="btn-primary btn-next-action">Selanjutnya →</button>
+            <div class="nav-bottom">
+                <button onclick="prevSoal()" class="btn-outline" style="width: 48%;">Sebelumnya</button>
+                <button id="btnNextAction" onclick="nextSoal()" class="btn-primary" style="width: 48%;">Selanjutnya</button>
             </div>
         </div>
-    </div>
-
-    <!-- 5. SELESAI -->
-    <div id="finishSection" class="card hidden fade-in" style="text-align: center;">
-        <h2 style="color: #10b981; font-size: 28px;">Ujian Selesai!</h2>
-        <p class="subtitle" style="margin-top: 15px;">Jawaban Anda telah tersimpan. Anda tidak dapat login kembali ke ujian ini.</p>
-        <button onclick="window.location.reload()" class="btn-prev" style="width:100%; border:none; background:#e2e8f0">Kembali ke Awal</button>
     </div>
 
     <script>
         // =========================================================
+        // WAJIB PASTE URL APPS SCRIPT-MU (YANG BARU DI-DEPLOY) DISINI:
         const API_URL = 'https://script.google.com/macros/s/AKfycbwKlOO_iTbieOG5nYx_FJz2DOyEHy4U1Va-LkkpVMlf04d1jWgtLjWFgudF3KQ0Oq39/exec'; 
         // =========================================================
         
         let state = { user: null, questions: [], answers: {}, currentIndex: 0 };
 
-        const show = (id) => { 
+        const show = (id) => {
             document.getElementById(id).classList.remove('hidden');
-            if(id === 'examSection' || id === 'finishSection') document.querySelector('.bg-wave').style.display = 'none';
+            if(id === 'examSection') {
+                document.getElementById('mainContainer').classList.add('hidden');
+                document.getElementById('topbar').classList.remove('hidden');
+            }
         };
         const hide = (id) => document.getElementById(id).classList.add('hidden');
-        const loading = (isLoading) => isLoading ? document.getElementById('loadingScreen').classList.remove('hidden') : document.getElementById('loadingScreen').classList.add('hidden');
+        const loading = (isLoading) => document.getElementById('loadingScreen').classList.toggle('hidden', !isLoading);
 
         // FITUR ACAK SOAL
         function shuffleArray(array) {
@@ -159,36 +212,41 @@
         async function doLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            if(!u || !p) return alert('Wajib diisi!');
+            if(!u || !p) return alert('NIS dan Password wajib diisi!');
+            
             loading(true);
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
                 if(data.status === 'success') {
-                    state.user = data.user; document.getElementById('displayNama').innerText = state.user.nama;
+                    state.user = data.user; 
+                    document.getElementById('displayNama').innerText = "Halo, " + state.user.nama;
+                    document.getElementById('topNama').innerText = state.user.nama;
                     hide('loginSection'); show('tokenSection');
-                } else { alert(data.message); }
-            } catch (err) { alert('Gagal server.'); }
+                } else { alert(data.message); } // Menampilkan alert "UJIAN SELESAI"
+            } catch (err) { alert('Gagal terhubung ke server. Periksa internet Anda.'); }
             loading(false);
         }
 
         async function doVerifyToken() {
             const t = document.getElementById('token').value;
-            if(!t) return alert('Isi token!');
+            if(!t) return alert('Silakan masukkan token!');
+            
             loading(true);
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'verifyToken', username: document.getElementById('username').value, token: t }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
                 if(data.status === 'success') {
                     state.questions = data.questions; 
-                    shuffleArray(state.questions); // PANGGIL FITUR ACAK SOAL DI SINI
+                    shuffleArray(state.questions); // Soal diacak di sini
                     state.user.mapel = data.mapel; 
                     document.getElementById('confNama').innerText = state.user.nama;
                     document.getElementById('confNis').innerText = state.user.nis;
                     document.getElementById('confMapelDetail').innerText = state.user.mapel.toUpperCase();
+                    document.getElementById('confTotalSoal').innerText = state.questions.length + " Butir";
                     hide('tokenSection'); show('confirmSection');
                 } else { alert(data.message); }
-            } catch (err) { alert('Gagal Token.'); }
+            } catch (err) { alert('Gagal memvalidasi token.'); }
             loading(false);
         }
 
@@ -196,8 +254,8 @@
 
         function loadSoal(index) {
             state.currentIndex = index; const soal = state.questions[index];
-            document.getElementById('nomorSoalTitle').innerText = `SOAL ${index + 1}`;
-            document.getElementById('progressText').innerText = `${index + 1} dari ${state.questions.length}`;
+            document.getElementById('nomorSoalTitle').innerText = `Soal No. ${index + 1}`;
+            document.getElementById('progressText').innerText = `${index + 1} / ${state.questions.length}`;
             document.getElementById('pertanyaanTeks').innerText = soal.pertanyaan;
             
             const opsiContainer = document.getElementById('opsiContainer'); opsiContainer.innerHTML = '';
@@ -208,25 +266,24 @@
                     opsiContainer.innerHTML += `
                         <label class="opsi-item ${isChecked ? 'selected' : ''}">
                             <input type="radio" name="jawaban" value="${h}" onchange="pilihJawaban('${soal.no}', '${h}')" ${isChecked ? 'checked' : ''}>
-                            <div class="radio-circle">${h}</div>
-                            <div style="font-weight: 500; font-size: 15px;">${teksOpsi}</div>
+                            <div class="opsi-abjad">${h}</div>
+                            <div class="opsi-teks">${teksOpsi}</div>
                         </label>
                     `;
                 }
             });
 
-            // LOGUCA TOMBOL BERUBAH DI NOMOR TERAKHIR
+            // LOGIKA TOMBOL BERUBAH MENJADI SELESAI DI NOMOR AKHIR
             const btnNext = document.getElementById('btnNextAction');
             if(index === state.questions.length - 1) {
-                btnNext.innerText = "Selesai ✓";
-                btnNext.className = "btn-primary btn-next-action btn-success"; // Ubah jadi hijau
+                btnNext.innerText = "Selesai & Kumpulkan";
+                btnNext.className = "btn-danger"; 
                 btnNext.onclick = submitExam;
             } else {
-                btnNext.innerText = "Selanjutnya →";
-                btnNext.className = "btn-primary btn-next-action"; // Kembalikan ke biru
+                btnNext.innerText = "Selanjutnya";
+                btnNext.className = "btn-primary"; 
                 btnNext.onclick = nextSoal;
             }
-
             updateGridSelection();
         }
 
@@ -238,7 +295,7 @@
             const grid = document.getElementById('gridNavigasi'); grid.innerHTML = '';
             state.questions.forEach((q, index) => {
                 const isDijawab = state.answers[q.no];
-                grid.innerHTML += `<button onclick="loadSoal(${index})" id="navBtn-${index}" class="btn-nomor ${isDijawab ? 'dijawab' : ''}">${index + 1}</button>`;
+                grid.innerHTML += `<button onclick="loadSoal(${index})" id="navBtn-${index}" class="btn-grid ${isDijawab ? 'dijawab' : ''}">${index + 1}</button>`;
             });
             updateGridSelection();
         }
@@ -253,15 +310,21 @@
         async function submitExam() {
             const totalDijawab = Object.keys(state.answers).length;
             const belumDijawab = state.questions.length - totalDijawab;
-            let pesan = belumDijawab > 0 ? `Masih ada ${belumDijawab} soal KOSONG!\nYakin SELESAIKAN?` : "Yakin ingin menyelesaikan ujian?";
+            
+            let pesan = belumDijawab > 0 ? `PERINGATAN!\nMasih ada ${belumDijawab} soal yang belum dijawab.\nYakin ingin menyelesaikan ujian?` : "Apakah Anda yakin ingin menyelesaikan ujian?";
             if(!confirm(pesan)) return;
 
             loading(true);
             try {
                 const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'submitExam', user: state.user, answers: state.answers }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
-                if(data.status === 'success') { hide('examSection'); show('finishSection'); } else { alert('Gagal!'); }
-            } catch (err) { alert('Terjadi kesalahan.'); }
+                if(data.status === 'success') { 
+                    hide('examSection'); 
+                    document.getElementById('topbar').classList.add('hidden');
+                    document.getElementById('mainContainer').classList.remove('hidden');
+                    show('finishSection'); 
+                } else { alert('Gagal mengirim data!'); }
+            } catch (err) { alert('Terjadi kesalahan jaringan.'); }
             loading(false);
         }
     </script>
