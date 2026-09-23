@@ -4,116 +4,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Ujian CBT</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* CSS MURNI - LOADING INSTAN */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-dark); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        
         .hidden { display: none !important; }
-        .bg-blue-600 { background-color: #2563eb; }
+        
+        /* Layout Cards */
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; max-width: 450px; border-top: 6px solid var(--primary); }
+        .exam-container { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 1000px; align-items: flex-start; }
+        @media (min-width: 768px) { .exam-container { flex-direction: row; } }
+        
+        .panel-soal { flex: 1; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; }
+        .panel-nav { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); width: 100%; min-width: 280px; }
+        @media (min-width: 768px) { .panel-nav { width: 300px; position: sticky; top: 20px; } }
+
+        /* Typography & Forms */
+        h1, h2 { text-align: center; margin-bottom: 10px; color: var(--text-dark); }
+        p { color: var(--text-muted); font-size: 14px; text-align: center; margin-bottom: 20px; }
+        
+        input { width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; font-size: 16px; transition: 0.3s; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+        
+        button.btn-primary { width: 100%; background-color: var(--primary); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button.btn-primary:hover { background-color: var(--primary-hover); }
+        
+        button.btn-danger { background-color: #ef4444; color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        button.btn-danger:hover { background-color: #dc2626; }
+        
+        .btn-group { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .btn-group button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-prev { background: #e5e7eb; color: var(--text-dark); }
+        .btn-next { background: var(--primary); color: white; }
+
+        /* Konfirmasi Table */
+        .table-konfirmasi { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .table-konfirmasi td { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 15px; }
+        .table-konfirmasi td:first-child { color: var(--text-muted); }
+        .table-konfirmasi td:last-child { font-weight: bold; text-align: right; }
+        
+        .info-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
+        
+        /* Soal & Opsi */
+        .judul-soal { font-size: 18px; font-weight: bold; color: var(--primary); border-bottom: 2px solid var(--bg-color); padding-bottom: 10px; margin-bottom: 20px; }
+        .teks-soal { font-size: 16px; line-height: 1.6; margin-bottom: 25px; white-space: pre-wrap; }
+        
+        .opsi-list { display: flex; flex-direction: column; gap: 12px; }
+        .opsi-item { display: flex; items-center; gap: 15px; padding: 15px; border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s; background: white; }
+        .opsi-item:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .opsi-item input { display: none; }
+        .opsi-huruf { width: 35px; height: 35px; min-width: 35px; display: flex; align-items: center; justify-content: center; background: var(--bg-color); border: 2px solid var(--border-color); border-radius: 50%; font-weight: bold; color: var(--text-muted); }
+        
+        /* Style saat opsi dipilih */
+        .opsi-item.selected { border-color: var(--primary); background: #eff6ff; }
+        .opsi-item.selected .opsi-huruf { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* Navigasi Grid */
+        .nav-title { text-align: center; font-weight: bold; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; }
+        .grid-nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .nav-btn { aspect-ratio: 1; border: 1px solid #fde047; background: #fef9c3; color: #a16207; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
+        
+        /* Status Navigasi */
+        .nav-btn.dijawab { background: #22c55e; border-color: #16a34a; color: white; }
+        .nav-btn.aktif { box-shadow: 0 0 0 3px rgba(37,99,235,0.4); transform: scale(1.1); z-index: 10; border-color: var(--primary); }
+
+        .keterangan-nav { display: flex; justify-content: center; gap: 15px; margin-top: 20px; font-size: 12px; color: var(--text-muted); }
+        .ket-item { display: flex; align-items: center; gap: 5px; }
+        .box-kuning { width: 12px; height: 12px; background: #fef9c3; border: 1px solid #fde047; }
+        .box-hijau { width: 12px; height: 12px; background: #22c55e; }
+
+        /* Loading Screen Murni CSS */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
+        .loader-box { background: white; padding: 20px 30px; border-radius: 8px; display: flex; align-items: center; gap: 15px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center font-sans">
+<body>
 
-    <!-- LOADING SCREEN -->
-    <div id="loadingScreen" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white p-5 rounded-lg shadow-lg flex items-center gap-3">
-            <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span class="font-semibold text-gray-700">Memproses...</span>
+    <!-- LOADING -->
+    <div id="loadingScreen" class="overlay hidden">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <span>Memproses Data...</span>
         </div>
     </div>
 
-    <!-- 1. MENU LOGIN -->
-    <div id="loginSection" class="bg-white p-8 rounded-xl shadow-md w-full max-w-md border-t-8 border-blue-600">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Log In CBT</h1>
-            <p class="text-sm text-gray-500">Silakan masukkan Username dan Password</p>
-        </div>
-        <input type="text" id="username" placeholder="Username / NIS" class="w-full p-3 border rounded mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="doLogin()" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition">Login Now</button>
+    <!-- 1. LOGIN -->
+    <div id="loginSection" class="card">
+        <h1>Log In CBT</h1>
+        <p>Silakan masukkan Username dan Password</p>
+        <input type="text" id="username" placeholder="Username / NIS">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="doLogin()" class="btn-primary">Login Now</button>
     </div>
 
-    <!-- 2. MENU TOKEN -->
-    <div id="tokenSection" class="hidden bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center border-t-8 border-blue-600">
-        <h2 class="text-green-600 font-semibold mb-4">Selamat Datang, <br><span id="displayNama" class="text-xl text-gray-800"></span></h2>
-        <h3 class="font-bold text-lg mb-2">Validasi Token</h3>
-        <p class="text-sm text-gray-500 mb-4">Minta kode token ujian kepada Pengawas.</p>
-        <input type="text" id="token" placeholder="KETIK TOKEN..." class="w-full p-3 border rounded mb-4 text-center font-bold uppercase focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="doVerifyToken()" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition">Validasi & Lanjut</button>
+    <!-- 2. TOKEN -->
+    <div id="tokenSection" class="card hidden">
+        <h2 style="color: #16a34a;">Selamat Datang,</h2>
+        <h2 id="displayNama" style="margin-bottom: 20px;"></h2>
+        <p>Minta kode token ujian kepada Pengawas.</p>
+        <input type="text" id="token" placeholder="KETIK TOKEN..." style="text-align: center; text-transform: uppercase; font-weight: bold; letter-spacing: 2px;">
+        <button onclick="doVerifyToken()" class="btn-primary">Validasi Token</button>
     </div>
 
-    <!-- 3. MENU KONFIRMASI -->
-    <div id="confirmSection" class="hidden bg-white p-8 rounded-xl shadow-md w-full max-w-md border-t-8 border-blue-600">
-        <h2 class="font-bold text-xl text-center mb-6">KONFIRMASI DATA PESERTA</h2>
-        <table class="w-full mb-6 text-sm text-left">
-            <tr><td class="py-2 text-gray-600 border-b">Nama</td><td class="font-bold text-blue-700 border-b" id="confNama"></td></tr>
-            <tr><td class="py-2 text-gray-600 border-b">NIS</td><td class="font-semibold border-b" id="confNis"></td></tr>
-            <tr><td class="py-2 text-gray-600 border-b">Jurusan</td><td class="font-semibold border-b" id="confJurusan"></td></tr>
-            <tr><td class="py-2 text-gray-600 border-b">Kelas</td><td class="font-semibold border-b" id="confKelas"></td></tr>
+    <!-- 3. KONFIRMASI -->
+    <div id="confirmSection" class="card hidden">
+        <h2>KONFIRMASI PESERTA</h2>
+        <p>Pastikan data Anda di bawah ini benar.</p>
+        
+        <table class="table-konfirmasi">
+            <tr><td>Nama</td><td id="confNama"></td></tr>
+            <tr><td>NIS</td><td id="confNis"></td></tr>
+            <tr><td>Jurusan</td><td id="confJurusan"></td></tr>
+            <tr><td>Kelas</td><td id="confKelas"></td></tr>
         </table>
-        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
-            <p class="font-bold text-blue-800 border-b border-blue-200 pb-1 mb-2">Ujian Aktif</p>
-            <p class="text-sm font-bold text-gray-800" id="confMapelDetail"></p>
-            <p class="text-xs text-gray-500 mt-1"><span id="confTotalSoal"></span> Soal Pilihan Ganda</p>
+        
+        <div class="info-box">
+            <div style="font-weight: bold; color: var(--primary); margin-bottom: 5px;">Mata Pelajaran:</div>
+            <div id="confMapelDetail" style="font-size: 18px; font-weight: bold; margin-bottom: 5px;"></div>
+            <div style="font-size: 13px; color: var(--text-muted);"><span id="confTotalSoal"></span> Soal Pilihan Ganda</div>
         </div>
-        <button onclick="startExam()" class="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md">MULAI UJIAN SEKARANG</button>
+        
+        <button onclick="startExam()" class="btn-primary">MULAI UJIAN SEKARANG</button>
     </div>
 
-    <!-- 4. AREA UJIAN -->
-    <div id="examSection" class="hidden w-full max-w-5xl mx-auto flex flex-col md:flex-row gap-6 p-4">
+    <!-- 4. UJIAN -->
+    <div id="examSection" class="exam-container hidden">
         <!-- Kiri: Soal -->
-        <div class="bg-white rounded-xl shadow-md p-6 flex-1">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="font-bold text-lg text-blue-700" id="nomorSoalTitle">SOAL 1</h3>
+        <div class="panel-soal">
+            <div class="judul-soal" id="nomorSoalTitle">SOAL 1</div>
+            <div class="teks-soal" id="pertanyaanTeks"></div>
+            
+            <div class="opsi-list" id="opsiContainer">
+                <!-- Opsi JS -->
             </div>
-            <div id="pertanyaanTeks" class="text-gray-800 mb-6 font-medium leading-relaxed text-lg whitespace-pre-wrap"></div>
-            <div id="opsiContainer" class="flex flex-col gap-3">
-                <!-- Opsi digenerate JS -->
-            </div>
-            <div class="mt-8 flex justify-between pt-4 border-t">
-                <button onclick="prevSoal()" class="bg-gray-200 px-6 py-2 rounded font-semibold hover:bg-gray-300 transition">Sebelumnya</button>
-                <button onclick="nextSoal()" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition" id="btnNext">Selanjutnya</button>
+            
+            <div class="btn-group">
+                <button onclick="prevSoal()" class="btn-prev">Sebelumnya</button>
+                <button onclick="nextSoal()" class="btn-next">Selanjutnya</button>
             </div>
         </div>
 
         <!-- Kanan: Navigasi -->
-        <div class="bg-white rounded-xl shadow-md p-6 w-full md:w-80 h-fit">
-            <h3 class="font-bold text-center mb-4 border-b pb-2 text-gray-700">DAFTAR SOAL</h3>
-            <div id="gridNavigasi" class="grid grid-cols-5 gap-2 mb-6">
-                <!-- Tombol navigasi digenerate JS -->
+        <div class="panel-nav">
+            <div class="nav-title">DAFTAR SOAL</div>
+            <div class="grid-nav" id="gridNavigasi">
+                <!-- Grid JS -->
             </div>
-            <div class="flex gap-2 text-xs text-gray-500 mb-6 justify-center">
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-yellow-200 border border-yellow-400 inline-block"></span> Belum</div>
-                <div class="flex items-center gap-1"><span class="w-3 h-3 bg-green-500 inline-block"></span> Sudah</div>
+            
+            <div class="keterangan-nav">
+                <div class="ket-item"><div class="box-kuning"></div> Belum</div>
+                <div class="ket-item"><div class="box-hijau"></div> Sudah</div>
             </div>
-            <button onclick="submitExam()" class="w-full bg-red-500 text-white py-3 rounded-lg font-bold hover:bg-red-600 transition shadow">SELESAI UJIAN</button>
+            
+            <button onclick="submitExam()" class="btn-danger">SELESAI UJIAN</button>
         </div>
     </div>
 
-    <!-- 5. MENU SELESAI -->
-    <div id="finishSection" class="hidden bg-white p-8 rounded-xl shadow-md w-full max-w-md text-center border-t-8 border-green-500">
-        <svg class="w-20 h-20 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <h2 class="text-2xl font-bold mb-2 text-gray-800">Ujian Selesai!</h2>
-        <p class="text-gray-600 mb-6">Jawaban Anda telah berhasil dikirim ke server. Silakan lapor ke Pengawas ruangan.</p>
-        <button onclick="window.location.reload()" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-300">Kembali ke Awal</button>
+    <!-- 5. SELESAI -->
+    <div id="finishSection" class="card hidden" style="text-align: center; border-top-color: #22c55e;">
+        <div style="font-size: 60px; color: #22c55e; margin-bottom: 10px;">✓</div>
+        <h2>Ujian Selesai!</h2>
+        <p>Jawaban Anda telah berhasil dikirim ke server. Silakan lapor ke Pengawas ruangan.</p>
+        <button onclick="window.location.reload()" style="background: #e5e7eb; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Kembali ke Awal</button>
     </div>
 
     <script>
-        // ==========================================
-        // WAJIB GANTI URL DI BAWAH INI DENGAN URL WEB APP KAMU!
-        // ==========================================
+        // =========================================================================
+        // WAJIB GANTI INI DENGAN URL APPS SCRIPT KAMU !!!
         const API_URL = 'https://script.google.com/macros/s/AKfycbwKlOO_iTbieOG5nYx_FJz2DOyEHy4U1Va-LkkpVMlf04d1jWgtLjWFgudF3KQ0Oq39/exec'; 
+        // =========================================================================
         
-        let state = {
-            user: null,
-            questions: [],
-            answers: {}, 
-            currentIndex: 0
-        };
+        let state = { user: null, questions: [], answers: {}, currentIndex: 0 };
 
         const show = (id) => document.getElementById(id).classList.remove('hidden');
         const hide = (id) => document.getElementById(id).classList.add('hidden');
         const loading = (isLoading) => isLoading ? show('loadingScreen') : hide('loadingScreen');
 
-        // 1. PROSES LOGIN
         async function doLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
@@ -121,130 +199,77 @@
 
             loading(true);
             try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'login', username: u, password: p }),
-                    headers: { 'Content-Type': 'text/plain' } 
-                });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: u, password: p }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
-                
                 if(data.status === 'success') {
                     state.user = data.user;
                     document.getElementById('displayNama').innerText = state.user.nama;
-                    hide('loginSection');
-                    show('tokenSection');
-                } else {
-                    alert(data.message);
-                }
-            } catch (err) {
-                alert('Gagal terhubung ke server. Pastikan internet aktif.');
-            }
+                    hide('loginSection'); show('tokenSection');
+                } else { alert(data.message); }
+            } catch (err) { alert('Gagal terhubung ke server.'); }
             loading(false);
         }
 
-        // 2. PROSES TOKEN & DOWNLOAD SOAL
         async function doVerifyToken() {
             const t = document.getElementById('token').value;
-            if(!t) return alert('Silakan masukkan token ujian!');
+            if(!t) return alert('Masukkan token ujian!');
 
             loading(true);
             try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'verifyToken', username: document.getElementById('username').value, token: t }),
-                    headers: { 'Content-Type': 'text/plain' }
-                });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'verifyToken', username: document.getElementById('username').value, token: t }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
                 
                 if(data.status === 'success') {
-                    state.questions = data.questions; 
-                    state.user.mapel = data.mapel; 
-
+                    state.questions = data.questions; state.user.mapel = data.mapel; 
                     document.getElementById('confNama').innerText = state.user.nama;
                     document.getElementById('confNis').innerText = state.user.nis;
                     document.getElementById('confJurusan').innerText = state.user.jurusan;
                     document.getElementById('confKelas').innerText = state.user.kelas;
-                    
-                    document.getElementById('confMapelDetail').innerText = "Mata Pelajaran: " + state.user.mapel.toUpperCase();
+                    document.getElementById('confMapelDetail').innerText = state.user.mapel.toUpperCase();
                     document.getElementById('confTotalSoal').innerText = state.questions.length;
-
-                    hide('tokenSection');
-                    show('confirmSection');
-                } else {
-                    alert(data.message);
-                }
-            } catch (err) {
-                alert('Gagal memvalidasi token. Cek koneksi internet.');
-            }
+                    hide('tokenSection'); show('confirmSection');
+                } else { alert(data.message); }
+            } catch (err) { alert('Gagal memvalidasi token.'); }
             loading(false);
         }
 
-        // 3. MULAI UJIAN
-        function startExam() {
-            hide('confirmSection');
-            show('examSection');
-            renderNavigasi();
-            loadSoal(0);
-        }
+        function startExam() { hide('confirmSection'); show('examSection'); renderNavigasi(); loadSoal(0); }
 
-        // 4. LOAD SOAL TANPA LOADING (SPA)
         function loadSoal(index) {
-            state.currentIndex = index;
-            const soal = state.questions[index];
-            
+            state.currentIndex = index; const soal = state.questions[index];
             document.getElementById('nomorSoalTitle').innerText = `SOAL NOMOR ${index + 1}`;
             document.getElementById('pertanyaanTeks').innerText = soal.pertanyaan;
             
-            const opsiContainer = document.getElementById('opsiContainer');
-            opsiContainer.innerHTML = '';
+            const opsiContainer = document.getElementById('opsiContainer'); opsiContainer.innerHTML = '';
             
-            const huruf = ['A', 'B', 'C', 'D', 'E'];
-            huruf.forEach(h => {
+            ['A', 'B', 'C', 'D', 'E'].forEach(h => {
                 const teksOpsi = soal.opsi[h];
                 if(teksOpsi) {
                     const isChecked = state.answers[soal.no] === h;
                     opsiContainer.innerHTML += `
-                        <label class="border-2 p-4 rounded-lg flex items-center gap-4 cursor-pointer transition-all duration-200 ${isChecked ? 'bg-blue-50 border-blue-500' : 'bg-white hover:bg-gray-50 border-gray-200'}">
-                            <input type="radio" name="jawaban" value="${h}" class="hidden" onchange="pilihJawaban('${soal.no}', '${h}')" ${isChecked ? 'checked' : ''}>
-                            <span class="w-8 h-8 flex items-center justify-center rounded-full border-2 font-bold ${isChecked ? 'bg-blue-600 text-white border-blue-600' : 'bg-gray-100 border-gray-300 text-gray-600'}">${h}</span>
-                            <span class="text-[15px] font-medium text-gray-800">${teksOpsi}</span>
+                        <label class="opsi-item ${isChecked ? 'selected' : ''}">
+                            <input type="radio" name="jawaban" value="${h}" onchange="pilihJawaban('${soal.no}', '${h}')" ${isChecked ? 'checked' : ''}>
+                            <div class="opsi-huruf">${h}</div>
+                            <div class="opsi-teks">${teksOpsi}</div>
                         </label>
                     `;
                 }
             });
-
             updateGridSelection();
         }
 
         function pilihJawaban(noSoal, jawaban) {
-            state.answers[noSoal] = jawaban;
-            loadSoal(state.currentIndex); 
-            renderNavigasi(); 
+            state.answers[noSoal] = jawaban; loadSoal(state.currentIndex); renderNavigasi(); 
         }
 
-        function nextSoal() {
-            if(state.currentIndex < state.questions.length - 1) loadSoal(state.currentIndex + 1);
-        }
+        function nextSoal() { if(state.currentIndex < state.questions.length - 1) loadSoal(state.currentIndex + 1); }
+        function prevSoal() { if(state.currentIndex > 0) loadSoal(state.currentIndex - 1); }
 
-        function prevSoal() {
-            if(state.currentIndex > 0) loadSoal(state.currentIndex - 1);
-        }
-
-        // 5. RENDER NAVIGASI KANAN (Kuning/Hijau)
         function renderNavigasi() {
-            const grid = document.getElementById('gridNavigasi');
-            grid.innerHTML = '';
-            
+            const grid = document.getElementById('gridNavigasi'); grid.innerHTML = '';
             state.questions.forEach((q, index) => {
                 const isDijawab = state.answers[q.no];
-                // Kuning jika belum, Hijau jika sudah dijawab
-                const colorClass = isDijawab ? 'bg-green-500 text-white border-green-600' : 'bg-yellow-100 text-yellow-700 border-yellow-400';
-                
-                grid.innerHTML += `
-                    <button onclick="loadSoal(${index})" id="navBtn-${index}" class="${colorClass} border w-full aspect-square rounded font-bold text-sm flex items-center justify-center transition-all">
-                        ${index + 1}
-                    </button>
-                `;
+                grid.innerHTML += `<button onclick="loadSoal(${index})" id="navBtn-${index}" class="nav-btn ${isDijawab ? 'dijawab' : ''}">${index + 1}</button>`;
             });
             updateGridSelection();
         }
@@ -252,50 +277,22 @@
         function updateGridSelection() {
             state.questions.forEach((q, idx) => {
                 const btn = document.getElementById(`navBtn-${idx}`);
-                if(btn) {
-                    if(idx === state.currentIndex) {
-                        btn.classList.add('ring-2', 'ring-blue-600', 'ring-offset-2', 'transform', 'scale-110');
-                    } else {
-                        btn.classList.remove('ring-2', 'ring-blue-600', 'ring-offset-2', 'transform', 'scale-110');
-                    }
-                }
+                if(btn) { idx === state.currentIndex ? btn.classList.add('aktif') : btn.classList.remove('aktif'); }
             });
         }
 
-        // 6. SUBMIT JAWABAN KE SPREADSHEET
         async function submitExam() {
-            // Hitung yang belum dijawab
             const totalDijawab = Object.keys(state.answers).length;
             const belumDijawab = state.questions.length - totalDijawab;
-            
-            let pesan = belumDijawab > 0 
-                ? `Masih ada ${belumDijawab} soal yang BELUM dijawab!\nYakin ingin menyelesaikan ujian?`
-                : "Apakah Anda yakin ingin menyelesaikan ujian? Jawaban tidak dapat diubah lagi.";
-                
+            let pesan = belumDijawab > 0 ? `Masih ada ${belumDijawab} soal KOSONG!\nYakin kumpulkan?` : "Yakin kumpulkan jawaban?";
             if(!confirm(pesan)) return;
 
             loading(true);
             try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: 'submitExam', 
-                        user: state.user,
-                        answers: state.answers 
-                    }),
-                    headers: { 'Content-Type': 'text/plain' }
-                });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'submitExam', user: state.user, answers: state.answers }), headers: { 'Content-Type': 'text/plain' } });
                 const data = await res.json();
-                
-                if(data.status === 'success') {
-                    hide('examSection');
-                    show('finishSection'); 
-                } else {
-                    alert('Gagal mengirim jawaban.');
-                }
-            } catch (err) {
-                alert('Terjadi kesalahan jaringan. Coba klik selesai lagi.');
-            }
+                if(data.status === 'success') { hide('examSection'); show('finishSection'); } else { alert('Gagal!'); }
+            } catch (err) { alert('Terjadi kesalahan jaringan.'); }
             loading(false);
         }
     </script>
